@@ -6,6 +6,8 @@ import dotenv from "dotenv";
 import publicRoutes from "./routes/publicRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import participantRoutes from "./routes/participantRoutes.js"; 
+import domainRoutes from "./routes/domainRoutes.js";
+import seedRoutes from "./routes/seedRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -24,7 +26,9 @@ mongoose
 // Routes
 app.use("/api", publicRoutes);
 app.use("/api", adminRoutes);
-app.use("/api/participant", participantRoutes); 
+app.use("/api/participant", participantRoutes);
+app.use("/api", domainRoutes); 
+app.use("/api", seedRoutes);
 
 app.get("/", (req, res) => res.send("Codex Backend Running 🧠"));
 
