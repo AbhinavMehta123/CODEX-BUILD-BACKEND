@@ -4,8 +4,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import publicRoutes from "./routes/publicRoutes.js";
-import participantRoutes from "./routes/participantRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import participantRoutes from "./routes/participantRoutes.js"; 
 
 dotenv.config();
 const app = express();
@@ -23,8 +23,8 @@ mongoose
 
 // Routes
 app.use("/api", publicRoutes);
-app.use("/api", participantRoutes);
 app.use("/api", adminRoutes);
+app.use("/api/participant", participantRoutes); 
 
 app.get("/", (req, res) => res.send("Codex Backend Running 🧠"));
 

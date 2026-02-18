@@ -1,34 +1,93 @@
+import jwt from "jsonwebtoken";
 import Participant from "../models/Participant.js";
-import Topic from "../models/Topic.js";
 
+const JWT_SECRET = process.env.JWT_SECRET || "+t0N9wuQod3xw7YdHPbCJW5JzunVASltsSENOz9Ym6M=";
+
+// 🧠 Utility: Random topic generator
+const topics = [
+  "AI-Powered Chatbot",
+  "Blockchain Voting System",
+  "IoT Smart Home Dashboard",
+  "ML Model Deployment",
+  "Crypto Portfolio Tracker",
+  "Voice Recognition Attendance App",
+  "AI Resume Analyzer",
+  "Smart Health Monitoring System",
+  "Data Visualization Dashboard",
+  "AR-based Learning Platform",
+];
+
+// 🎯 Start Build Controller
 export const startBuild = async (req, res) => {
+  const { name, domain } = req.body;
+
+  if (!name || !domain) {
+    return res.status(400).json({ message: "Name and domain required" });
+  }
+
   try {
-    const { name, domain } = req.body;
-    if (!name || !domain)
-      return res.status(400).json({ error: "Name and domain are required" });
+    // 🧩 Check if participant already exists
+    let existing = await Participant.findOne({ name });
+    if (existing) {
+      return res.json({
+        name: existing.name,
+        domain: existing.domain,
+        topic: existing.topic,
+        startTime: existing.startTime,
+        token: existing.token,
+      });
+    }
 
-    const topics = await Topic.find();
-    if (!topics.length)
-      return res.status(400).json({ error: "No topics available" });
+    // 🧠 Generate a random topic
+    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
 
-    const randomTopic =
-      topics[Math.floor(Math.random() * topics.length)].name;
+    // 🔑 Generate a JWT token
+    const token = jwt.sign({ name, domain }, JWT_SECRET, { expiresIn: "6h" });
 
-    const participant = new Participant({
+    // 💾 Save new participant
+    const participant = await Participant.create({
       name,
       domain,
       topic: randomTopic,
-      startTime: new Date(),
+      token,
     });
-
-    await participant.save();
 
     res.json({
-      topic: randomTopic,
+      name: participant.name,
+      domain: participant.domain,
+      topic: participant.topic,
       startTime: participant.startTime,
-      participantId: participant._id,
+      token: participant.token,
     });
-  } catch (error) {
-    res.status(500).json({ error: "Error starting build" });
+  } catch (err) {
+    console.error("Error in startBuild:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// ✅ Verify Participant Controller
+export const verifyParticipant = async (req, res) => {
+  const { token } = req.body;
+  if (!token) return res.status(401).json({ message: "No token provided" });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const participant = await Participant.findOne({ name: decoded.name });
+    if (!participant) return res.status(404).json({ message: "Participant not found" });
+
+    // 🧮 Calculate elapsed time (for reference)
+    const now = new Date();
+    const elapsedMinutes = Math.floor((now - participant.startTime) / 60000);
+
+    res.json({
+      name: participant.name,
+      domain: participant.domain,
+      topic: participant.topic,
+      startTime: participant.startTime,
+      elapsedMinutes,
+    });
+  } catch (err) {
+    console.error("Error verifying participant:", err);
+    res.status(401).json({ message: "Invalid token" });
   }
 };

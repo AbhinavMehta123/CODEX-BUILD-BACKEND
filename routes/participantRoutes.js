@@ -1,8 +1,12 @@
 import express from "express";
-import { startBuild } from "../controllers/participantController.js";
+import { startBuild, verifyParticipant } from "../controllers/participantController.js";
 
 const router = express.Router();
 
-router.post("/start-build", startBuild);
+// POST /api/participant/StartBuild
+router.post("/StartBuild", startBuild);
+
+// POST /api/participant/verify
+router.post("/verify", verifyParticipant);
 
 export default router;
