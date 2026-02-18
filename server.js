@@ -27,7 +27,7 @@ mongoose
 app.use("/api", publicRoutes);
 app.use("/api", adminRoutes);
 app.use("/api/participant", participantRoutes);
-app.use("/api", domainRoutes); 
+app.use("/api", domainRoutes);  
 app.use("/api", seedRoutes);
 
 app.get("/", (req, res) => res.send("Codex Backend Running 🧠"));
