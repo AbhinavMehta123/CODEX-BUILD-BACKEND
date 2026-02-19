@@ -7,11 +7,11 @@ import {
 
 const router = express.Router();
 
-// Admin endpoints
+// 🌐 Public
+router.get("/hackathon/status", getHackathonStatus);
+
+// 🧑‍💼 Admin
 router.post("/hackathon/start", startHackathon);
 router.post("/hackathon/stop", stopHackathon);
-
-// Public endpoint (for participants)
-router.get("/hackathon/status", getHackathonStatus);
 
 export default router;

@@ -1,6 +1,5 @@
 import Hackathon from "../models/Hackathon.js";
 
-// 🧑‍💼 Admin — Start hackathon
 export const startHackathon = async (req, res) => {
   try {
     let hackathon = await Hackathon.findOne();
@@ -12,6 +11,10 @@ export const startHackathon = async (req, res) => {
     hackathon.isActive = true;
     await hackathon.save();
 
+    // 🔥 Emit event to all participants
+    const io = req.app.get("io");
+    if (io) io.emit("hackathon_started", startTime);
+
     res.status(200).json({
       message: "Hackathon started successfully!",
       startTime,
@@ -22,14 +25,18 @@ export const startHackathon = async (req, res) => {
   }
 };
 
-// 🧑‍💼 Admin — Stop hackathon
 export const stopHackathon = async (req, res) => {
   try {
     const hackathon = await Hackathon.findOne();
     if (!hackathon) return res.status(404).json({ message: "No hackathon found" });
 
     hackathon.isActive = false;
+    hackathon.startTime = null;
     await hackathon.save();
+
+    // 🛑 Emit stop event
+    const io = req.app.get("io");
+    if (io) io.emit("hackathon_stopped");
 
     res.status(200).json({ message: "Hackathon stopped successfully" });
   } catch (err) {
@@ -38,7 +45,6 @@ export const stopHackathon = async (req, res) => {
   }
 };
 
-// 🌐 Public — Get hackathon status
 export const getHackathonStatus = async (req, res) => {
   try {
     const hackathon = await Hackathon.findOne();
