@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 import Participant from "../models/Participant.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "+t0N9wuQod3xw7YdHPbCJW5JzunVASltsSENOz9Ym6M=";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "+t0N9wuQod3xw7YdHPbCJW5JzunVASltsSENOz9Ym6M=";
 
 // 🧠 Utility: Random topic generator
 const topics = [
@@ -19,19 +20,23 @@ const topics = [
 
 // 🎯 Start Build Controller
 export const startBuild = async (req, res) => {
-  const { name, domain } = req.body;
+  const { name, phone, college, course } = req.body;
 
-  if (!name || !domain) {
-    return res.status(400).json({ message: "Name and domain required" });
+  if (!name || !phone || !college || !course) {
+    return res.status(400).json({
+      message: "Name, phone, college, and course are required",
+    });
   }
 
   try {
     // 🧩 Check if participant already exists
-    let existing = await Participant.findOne({ name });
+    let existing = await Participant.findOne({ name, phone });
     if (existing) {
       return res.json({
         name: existing.name,
-        domain: existing.domain,
+        phone: existing.phone,
+        college: existing.college,
+        course: existing.course,
         topic: existing.topic,
         startTime: existing.startTime,
         token: existing.token,
@@ -42,19 +47,25 @@ export const startBuild = async (req, res) => {
     const randomTopic = topics[Math.floor(Math.random() * topics.length)];
 
     // 🔑 Generate a JWT token
-    const token = jwt.sign({ name, domain }, JWT_SECRET, { expiresIn: "6h" });
+    const token = jwt.sign({ name, phone, college, course }, JWT_SECRET, {
+      expiresIn: "6h",
+    });
 
     // 💾 Save new participant
     const participant = await Participant.create({
       name,
-      domain,
+      phone,
+      college,
+      course,
       topic: randomTopic,
       token,
     });
 
     res.json({
       name: participant.name,
-      domain: participant.domain,
+      phone: participant.phone,
+      college: participant.college,
+      course: participant.course,
       topic: participant.topic,
       startTime: participant.startTime,
       token: participant.token,
@@ -72,16 +83,25 @@ export const verifyParticipant = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    const participant = await Participant.findOne({ name: decoded.name });
-    if (!participant) return res.status(404).json({ message: "Participant not found" });
+    const participant = await Participant.findOne({
+      name: decoded.name,
+      phone: decoded.phone,
+    });
+
+    if (!participant)
+      return res.status(404).json({ message: "Participant not found" });
 
     // 🧮 Calculate elapsed time (for reference)
     const now = new Date();
-    const elapsedMinutes = Math.floor((now - participant.startTime) / 60000);
+    const elapsedMinutes = Math.floor(
+      (now - participant.startTime) / 60000
+    );
 
     res.json({
       name: participant.name,
-      domain: participant.domain,
+      phone: participant.phone,
+      college: participant.college,
+      course: participant.course,
       topic: participant.topic,
       startTime: participant.startTime,
       elapsedMinutes,
