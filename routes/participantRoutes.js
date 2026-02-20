@@ -4,7 +4,7 @@ import { startBuild, verifyParticipant } from "../controllers/participantControl
 const router = express.Router();
 
 // 🎯 Participant starts build (fills name, phone, college, course)
-router.post("/startbuild", startBuild);
+router.post("/StartBuild", startBuild);
 
 // 🔐 Verify participant token (for restoring session)
 router.post("/participant/verify", verifyParticipant);
