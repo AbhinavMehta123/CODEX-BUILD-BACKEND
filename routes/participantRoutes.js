@@ -3,10 +3,10 @@ import { startBuild, verifyParticipant } from "../controllers/participantControl
 
 const router = express.Router();
 
-// POST /api/participant/StartBuild
-router.post("/StartBuild", startBuild);
+// 🎯 Participant starts build (fills name, phone, college, course)
+router.post("/startbuild", startBuild);
 
-// POST /api/participant/verify
-router.post("/verify", verifyParticipant);
+// 🔐 Verify participant token (for restoring session)
+router.post("/participant/verify", verifyParticipant);
 
 export default router;

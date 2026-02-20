@@ -20,7 +20,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
-      "https://tiny-mermaid-897043.netlify.app",
+      "codexbuildadminportal.netlify.app",
       "https://codexbuild.netlify.app",
       "http://localhost:3000",
       "http://localhost:5173"
