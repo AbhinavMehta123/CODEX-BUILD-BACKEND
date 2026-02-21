@@ -8,10 +8,12 @@ import {
 const router = express.Router();
 
 // 🧩 Participant submission
-router.post("/work/submit", submitWork);
+router.post("/submit", submitWork);
 
 // 🧾 Admin endpoints
-router.get("/work/all", getAllSubmissions);
-router.get("/work/:name", getSubmissionByName);
+// routes/workRoutes.js
+router.post("/submit", submitWork);
+router.get("/all", getAllSubmissions);
+router.get("/:name", getSubmissionByName);
 
 export default router;
