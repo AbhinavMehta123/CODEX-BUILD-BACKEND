@@ -75,7 +75,6 @@ let remainingTime = 0;
 io.on("connection", (socket) => {
   console.log("🟢 A client connected:", socket.id);
 
-  // When a participant joins, send current timer state
   socket.on("join_hackathon", () => {
     socket.emit("timer_update", remainingTime);
   });
@@ -83,21 +82,20 @@ io.on("connection", (socket) => {
   // Admin starts hackathon timer
   socket.on("start_hackathon", (duration = 110 * 60) => {
     console.log("🚀 Hackathon started for", duration, "seconds");
-
     clearInterval(timerInterval);
     remainingTime = duration;
 
-    // Broadcast to all participants
     io.emit("hackathon_started", { duration: remainingTime });
 
-    // Countdown logic
     timerInterval = setInterval(() => {
       if (remainingTime > 0) {
         remainingTime--;
         io.emit("timer_update", remainingTime);
       } else {
         clearInterval(timerInterval);
+        remainingTime = 0; // Reset
         io.emit("hackathon_ended");
+        io.emit("stop_responses"); // 🔒 Auto-lock when time hits zero
       }
     }, 1000);
   });
@@ -107,7 +105,19 @@ io.on("connection", (socket) => {
     clearInterval(timerInterval);
     remainingTime = 0;
     io.emit("hackathon_stopped");
+    io.emit("stop_responses"); // 🔒 Also lock responses
     console.log("🛑 Hackathon stopped by admin");
+  });
+
+  // ✅ New Socket Listeners for Response Control
+  socket.on("stop_responses", () => {
+    console.log("🔒 Submissions locked by admin");
+    io.emit("stop_responses"); 
+  });
+
+  socket.on("allow_responses", () => {
+    console.log("🔓 Submissions opened by admin");
+    io.emit("allow_responses");
   });
 
   socket.on("disconnect", () => {
@@ -115,5 +125,4 @@ io.on("connection", (socket) => {
   });
 });
 
-// ✅ Start HTTP + WebSocket Server
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
