@@ -1,15 +1,15 @@
-import WorkSubmit from "../models/WorkSubmit.js";
+import WorkSubmission from "../models/WorkSubmission.js";
 
-// 📤 Submit Work
+// 🧩 Participant submission
 export const submitWork = async (req, res) => {
   try {
     const { name, phone, projectDescription, githubRepo } = req.body;
 
     if (!name || !phone || !projectDescription || !githubRepo) {
-      return res.status(400).json({ message: "All fields are required." });
+      return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
-    const newSubmission = new WorkSubmit({
+    const newSubmission = new WorkSubmission({
       name,
       phone,
       projectDescription,
@@ -18,40 +18,34 @@ export const submitWork = async (req, res) => {
 
     await newSubmission.save();
 
-    return res.status(201).json({
-      success: true,
-      message: "Work submitted successfully!",
-      submission: newSubmission,
-    });
-  } catch (error) {
-    console.error("Error submitting work:", error);
-    res.status(500).json({ success: false, message: "Server error. Please try again later." });
+    res.status(201).json({ success: true, message: "Work submitted successfully!" });
+  } catch (err) {
+    console.error("Work submission error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// 📄 Get all submissions (Admin)
+// 🧾 Admin: get all submissions
 export const getAllSubmissions = async (req, res) => {
   try {
-    const submissions = await WorkSubmit.find().sort({ submittedAt: -1 });
-    return res.status(200).json(submissions);
-  } catch (error) {
-    console.error("Error fetching submissions:", error);
-    res.status(500).json({ success: false, message: "Server error fetching submissions." });
+    const submissions = await WorkSubmission.find().sort({ submittedAt: -1 });
+    res.json({ success: true, submissions });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// 🧾 Get a single participant submission
+// 🧾 Admin: get submission by name
 export const getSubmissionByName = async (req, res) => {
   try {
     const { name } = req.params;
-    const submission = await WorkSubmit.findOne({ name });
+    const submission = await WorkSubmission.findOne({ name });
+    if (!submission) return res.status(404).json({ success: false, message: "Not found" });
 
-    if (!submission)
-      return res.status(404).json({ success: false, message: "Submission not found." });
-
-    return res.status(200).json(submission);
-  } catch (error) {
-    console.error("Error fetching submission:", error);
-    res.status(500).json({ success: false, message: "Error fetching submission." });
+    res.json({ success: true, submission });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
