@@ -59,6 +59,7 @@ app.use("/api", participantRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", domainRoutes);
 app.use("/api", hackathonRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => res.send("Codex Backend Running 🧠"));
 
