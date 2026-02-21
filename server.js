@@ -11,6 +11,7 @@ import participantRoutes from "./routes/participantRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import domainRoutes from "./routes/domainRoutes.js";
 import hackathonRoutes from "./routes/hackathonRoutes.js";
+import workRoutes from "./routes/workRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -60,6 +61,7 @@ app.use("/api", adminRoutes);
 app.use("/api", domainRoutes);
 app.use("/api", hackathonRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/work", workRoutes);
 
 app.get("/", (req, res) => res.send("Codex Backend Running 🧠"));
 
