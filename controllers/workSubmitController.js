@@ -1,14 +1,26 @@
 import WorkSubmission from "../models/WorkSubmit.js";
+import Hackathon from "../models/Hackathon.js"; // ✅ Import the status model
 
 // 🧩 Participant submission
 export const submitWork = async (req, res) => {
   try {
+    // 1. Check if submissions are actually open in the database
+    const status = await Hackathon.findOne();
+    if (!status || !status.responsesOpen) {
+      return res.status(403).json({ 
+        success: false, 
+        message: "Submissions are currently closed by the admin." 
+      });
+    }
+
     const { name, phone, projectDescription, githubRepo } = req.body;
 
+    // 2. Validation
     if (!name || !phone || !projectDescription || !githubRepo) {
       return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
+    // 3. Save Submission
     const newSubmission = new WorkSubmission({
       name,
       phone,
