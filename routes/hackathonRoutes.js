@@ -18,6 +18,6 @@ router.post("/hackathon/stop", stopHackathon);
 
 // 🛑 Admin - Response Controls
 router.post("/hackathon/stop-responses", stopResponses);
-router.post("/hackathon/allow-responses", allowResponses); // ✅ New route: Re-open work submission
+router.post("/hackathon/allow-responses", allowResponses); 
 
 export default router;
