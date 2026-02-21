@@ -1,4 +1,4 @@
-import WorkSubmission from "../models/WorkSubmission.js";
+import WorkSubmission from "../models/WorkSubmit.js";
 
 // 🧩 Participant submission
 export const submitWork = async (req, res) => {

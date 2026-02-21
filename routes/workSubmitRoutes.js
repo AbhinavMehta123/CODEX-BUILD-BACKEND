@@ -3,7 +3,7 @@ import { submitWork, getAllSubmissions, getSubmissionByName } from "../controlle
 
 const router = express.Router();
 
-// Participant submits work
+// Participant submission
 router.post("/submit", submitWork);
 
 // Admin endpoints
