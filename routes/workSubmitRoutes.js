@@ -12,7 +12,6 @@ router.post("/submit", submitWork);
 
 // 🧾 Admin endpoints
 // routes/workRoutes.js
-router.post("/submit", submitWork);
 router.get("/all", getAllSubmissions);
 router.get("/:name", getSubmissionByName);
 
