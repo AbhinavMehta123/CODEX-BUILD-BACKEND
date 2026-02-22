@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import Participant from "../models/Participant.js";
+import Hackathon from "../models/Hackathon.js"; // ✅ make sure this path is correct
 
 const JWT_SECRET =
   process.env.JWT_SECRET || "+t0N9wuQod3xw7YdHPbCJW5JzunVASltsSENOz9Ym6M=";
@@ -76,12 +77,13 @@ export const startBuild = async (req, res) => {
   }
 };
 
-// ✅ Verify Participant Controller
+// ✅ Verify Participant Controller (fixed and error-free)
 export const verifyParticipant = async (req, res) => {
   const { token } = req.body;
   if (!token) return res.status(401).json({ message: "No token provided" });
 
   try {
+    // 🔑 Decode token and verify participant
     const decoded = jwt.verify(token, JWT_SECRET);
     const participant = await Participant.findOne({
       name: decoded.name,
@@ -91,23 +93,36 @@ export const verifyParticipant = async (req, res) => {
     if (!participant)
       return res.status(404).json({ message: "Participant not found" });
 
-    // 🧮 Calculate elapsed time (for reference)
-    const now = new Date();
-    const elapsedMinutes = Math.floor(
-      (now - participant.startTime) / 60000
-    );
+    // ✅ Safely fetch global hackathon status
+    let hackathon = await Hackathon.findOne();
+    if (!hackathon) {
+      hackathon = { isActive: false, startTime: null }; // fallback if no record exists
+    }
 
-    res.json({
+    const isActive = Boolean(hackathon.isActive);
+    const startTime = hackathon.startTime ? hackathon.startTime : null;
+
+    // 🧮 Optional: calculate elapsed time
+    let elapsedMinutes = 0;
+    if (participant.startTime) {
+      const now = new Date();
+      elapsedMinutes = Math.floor((now - participant.startTime) / 60000);
+    }
+
+    // ✅ Return combined data (participant + hackathon)
+    res.status(200).json({
       name: participant.name,
       phone: participant.phone,
       college: participant.college,
       course: participant.course,
       topic: participant.topic,
-      startTime: participant.startTime,
+      token: participant.token,
       elapsedMinutes,
+      isActive, // ✅ added
+      startTime, // ✅ added
     });
   } catch (err) {
     console.error("Error verifying participant:", err);
-    res.status(401).json({ message: "Invalid token" });
+    res.status(401).json({ message: "Invalid or expired token" });
   }
 };
