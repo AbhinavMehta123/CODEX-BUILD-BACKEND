@@ -5,19 +5,8 @@ import Hackathon from "../models/Hackathon.js"; // ✅ make sure this path is co
 const JWT_SECRET =
   process.env.JWT_SECRET || "+t0N9wuQod3xw7YdHPbCJW5JzunVASltsSENOz9Ym6M=";
 
-// 🧠 Utility: Random topic generator
-const topics = [
-  "AI-Powered Chatbot",
-  "Blockchain Voting System",
-  "IoT Smart Home Dashboard",
-  "ML Model Deployment",
-  "Crypto Portfolio Tracker",
-  "Voice Recognition Attendance App",
-  "AI Resume Analyzer",
-  "Smart Health Monitoring System",
-  "Data Visualization Dashboard",
-  "AR-based Learning Platform",
-];
+// 🧠 Utility: Fixed problem statement
+const topics = ["AI-Powered Chatbot for Student Queries"];
 
 // 🎯 Start Build Controller
 export const startBuild = async (req, res) => {
@@ -44,8 +33,8 @@ export const startBuild = async (req, res) => {
       });
     }
 
-    // 🧠 Generate a random topic
-    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+    // 🧠 Use the fixed topic
+    const randomTopic = topics[0];
 
     // 🔑 Generate a JWT token
     const token = jwt.sign({ name, phone, college, course }, JWT_SECRET, {
