@@ -6,7 +6,7 @@ const JWT_SECRET =
   process.env.JWT_SECRET || "+t0N9wuQod3xw7YdHPbCJW5JzunVASltsSENOz9Ym6M=";
 
 // 🧠 Utility: Fixed problem statement
-const topics = ["AI-Powered Fake News & Deepfake Detection"];
+const topics = ["Affordable Healthcare Access Platform"];
 
 // 🎯 Start Build Controller
 export const startBuild = async (req, res) => {
